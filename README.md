@@ -1,6 +1,26 @@
-# wireless-sensor-network
-无线传感器网络相关仿真 基于RSSI测距的多边定位法仿真 语言：python3
-# 使用说明
-1. 2D.py 和 3D.py：RSSI定位仿真图
-2. RSSI_2Ds.py 和 RSSI_3Ds.py：误差曲线图
-3. 2D_and_3D.py：二维和三维RSSI定位误差曲线对比图
+# 无线传感器网络
+
+#### 介绍
+无线传感器网络相关仿真
+
+#### 使用说明
+
+1.  RSSI_positioning   基于RSSI测距的多边定位法
+2.  Network_topology  五种网络拓扑结构生成
+
+#### 参与贡献
+
+1.  Fork 本仓库
+2.  新建 Feat_xxx 分支
+3.  提交代码
+4.  新建 Pull Request
+
+
+#### 特技
+
+1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
+2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
+3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
+4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
+5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
+6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
