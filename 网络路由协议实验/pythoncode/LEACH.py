@@ -29,13 +29,20 @@ class SensorNode:  # 定义传感器节点
     Num_CN = 0
     num_join = 0
 
-# 初始化参数
+# 初始化参数，减小节点总数 n 和迭代次数 rmax，可以减少代码运行时间
+random.seed(2)                    # 固定随机种子，使每次随机位置相同
+n = 400                           # 节点总数
+rmax = 2000                       # 迭代次数
+is_display = False                 # 是否动态显示节点分簇情况
+if is_display:
+    # 节点太多，会导致出图较慢，看起来较乱，这里设置n = 40, rmax=400演示效果
+    n = 40
+    max = 200  
 xm = 100                          # x轴范围
 ym = 100                          # y轴范围
 sink = BaseStation()
 sink.x = 50                       # 基站x轴
 sink.y = 125                      # 基站y轴
-n = 400                           # 节点总数
 p = 0.08                          # 簇头概率
 Eelec = 50*(10**(-9))
 Efs=10*(10**(-12))
@@ -44,7 +51,6 @@ ED=5*(10**(-9))
 d0 = 87
 packetLength = 4000
 ctrPacketLength = 100
-rmax = 200                  # 迭代次数
 E0 = 0.5                     # 初始能量
 Emin = 0.001                 # 节点存活所需的最小能量
 Rmax = 15                    # 初始通信距离
@@ -61,8 +67,8 @@ for i in range(n):
     node.d = ((node.xd-sink.x)**2+(node.yd-sink.y)**2)**0.5    # 节点距基站的距离
     node.Rc = Rmax                 # 节点的通信距离
     node.temp_rand = random.random()          # rand为(0,1)的随机数
-    node.type = 'N'                # 进行选举簇头前先将所有节点设为普通节点
-    node.selected = 'N'            # ’O'：当选过簇头，N：没有
+    node.type = 'N'                # 进行选举簇头前先将所有节点设为普通节点, 'C': 当前节点为簇头节点
+    node.selected = 'N'            # 'O'：当选过簇头，N：没有
     node.power = E0                # 初始能量
     node.CH = 0                    # 保存普通节点的簇头节点，-1代表自己是簇头
     node.flag = 1                  # 1代表存活；0代表死亡
@@ -77,9 +83,12 @@ for i in range(n):
 plt.legend(['基站', '节点'])
 plt.xlabel('x', fontdict={"family": "Times New Roman", "size": 15})
 plt.ylabel('y', fontdict={"family": "Times New Roman", "size": 15})
+plt.show()
+# plt.close()
 
 # save data
 flag = 1
+
 ################IMP_LEACH##################
 # 迭代
 alive_ima_leach = np.zeros((rmax, 1))        # 每轮存活节点数
@@ -90,7 +99,7 @@ for r in range(rmax):
         if Node[i].flag != 0:
             re_ima_leach[r] = re_ima_leach[r]+Node[i].power # 更新总能量
             alive_ima_leach[r] = alive_ima_leach[r]+1       # 更新存活节点
-    f = 0
+    f = 0 # 判断是否没达到最大迭代次数rmax就退出了
     if alive_ima_leach[r] == 0:
         stop = r
         f = 1
@@ -100,7 +109,7 @@ for r in range(rmax):
         Node[i].selected = 'N'
         Node[i].temp_rand = random.random()         # 节点取一个(0,1)的随机值，与p比较
         Node[i].Rc = Rmax*Node[i].power/E0    # 节点的通信距离
-        Node[i].CH = 0
+        Node[i].CH = 0                        # 保存普通节点的簇头节点，-1代表自己是簇头
         Node[i].N = np.zeros(n)               # 邻居节点集
         Node[i].Num_N = 0                     # 邻居节点集个数
         Node[i].FN = np.zeros(n)              # 前邻节点集
@@ -214,6 +223,7 @@ for r in range(rmax):
                     Node[final_CH[max_index]].Rc = Rmax * Node[final_CH[max_index]].power / E0
                     Node[i].CH = final_CH[max_index]
                     Node[final_CH[max_index]].num_join = Node[final_CH[max_index]].num_join + 1
+    
     # 能量模型
     # 发送数据
     for i in range(n):
@@ -252,14 +262,45 @@ for r in range(rmax):
         if Node[i].power < Emin:
             Node[i].flag = 0
     final_CH = []
+
+########################################################################################
+    # 动态显示节点分簇情况，不需要可以注释
+    if is_display:
+        if (r+1)%10 == 0:  # 每10次迭代画一次
+            # fig2 = plt.figure(dpi=80)
+            plt.cla()       # 清空画布
+            plt.grid(linestyle="dotted")
+            p1 = plt.scatter(sink.x, sink.y,marker='*',s=200)
+            for i in range(n):
+                if Node[i].type == 'C':
+                    p2 = plt.scatter(Node[i].xd, Node[i].yd,marker='^')
+                    # print('hhh')
+                    plt.plot([Node[i].xd, sink.x], [Node[i].yd, sink.y])
+                else:
+                    p3 = plt.scatter(Node[i].xd, Node[i].yd,marker='o')
+                    plt.plot([Node[i].xd, Node[Node[i].CH].xd], [Node[i].yd, Node[Node[i].CH].yd])
+            plt.legend([p1, p2, p3],['基站', '簇头节点', '普通节点'])
+            plt.xlabel('x', fontdict={"family": "Times New Roman", "size": 15})
+            plt.ylabel('y', fontdict={"family": "Times New Roman", "size": 15})
+            plt.title(f'IMP_LEACH：第{r+1}次迭代', fontdict={"size": 15})
+            plt.ion()       # 开启交互模式，如果不用动态展示，注释
+            plt.show()
+            plt.pause(0.15)  # 暂停0.15s，如果不用动态展示，注释
+
+if is_display:
+    plt.ioff() # 关闭交互模式
+    plt.show()
+############################################################################################
+
 if f == 0:
     stop = rmax
+
 
 # load data.mat 节点复位
 for i in range(n):
     # Node[i].temp_rand = random.random()          # rand为(0,1)的随机数
     Node[i].type = 'N'                # 进行选举簇头前先将所有节点设为普通节点
-    Node[i].selected = 'N'            # ’O'：当选过簇头，N：没有
+    Node[i].selected = 'N'            # 'O'：当选过簇头，N：没有
     Node[i].power = E0                # 初始能量
     Node[i].CH = 0                    # 保存普通节点的簇头节点，-1代表自己是簇头
     Node[i].flag = 1                  # 1代表存活；0代表死亡
@@ -277,7 +318,7 @@ for r in range(rmax):
         if Node[i].flag != 0:
             re_leach[r] = re_leach[r]+Node[i].power
             alive_leach[r] = alive_leach[r]+1
-    f = 0
+    f = 0  # 判断是否没达到最大迭代次数rmax就退出了
     if alive_leach[r] == 0:
         stop = r
         f = 1
@@ -351,6 +392,36 @@ for r in range(rmax):
     for i in range(n):
         if Node[i].power < 0:
             Node[i].flag = 0
+
+########################################################################################
+    # 动态显示节点分簇情况，不需要可以注释
+    if is_display:
+        if (r+1)%10 == 0:  # 每10次迭代画一次
+            # fig2 = plt.figure(dpi=80)
+            plt.cla()       # 清空画布
+            plt.grid(linestyle="dotted")
+            p1 = plt.scatter(sink.x, sink.y,marker='*',s=200)
+            for i in range(n):
+                if Node[i].type == 'C':
+                    p2 = plt.scatter(Node[i].xd, Node[i].yd,marker='^')
+                    # print('hhh')
+                    plt.plot([Node[i].xd, sink.x], [Node[i].yd, sink.y])
+                else:
+                    p3 = plt.scatter(Node[i].xd, Node[i].yd,marker='o')
+                    plt.plot([Node[i].xd, Node[Node[i].CH].xd], [Node[i].yd, Node[Node[i].CH].yd])
+            plt.legend([p1, p2, p3],['基站', '簇头节点', '普通节点'])
+            plt.xlabel('x', fontdict={"family": "Times New Roman", "size": 15})
+            plt.ylabel('y', fontdict={"family": "Times New Roman", "size": 15})
+            plt.title(f'LEACH：第{r+1}次迭代', fontdict={"size": 15})
+            plt.ion()       # 开启交互模式，如果不用动态展示，注释
+            plt.show()
+            plt.pause(0.15)  # 暂停0.15s，如果不用动态展示，注释
+
+if is_display:
+    plt.ioff() # 关闭交互模式
+    plt.show()
+########################################################################################
+
 if f == 0:
     stop = rmax
 ## 绘图显示
