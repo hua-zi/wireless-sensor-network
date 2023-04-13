@@ -264,7 +264,7 @@ for r in range(rmax):
     final_CH = []
 
 ########################################################################################
-    # 动态显示节点分簇情况，不需要可以注释
+    # 动态显示节点分簇情况
     if is_display:
         if (r+1)%10 == 0:  # 每10次迭代画一次
             # fig2 = plt.figure(dpi=80)
@@ -283,9 +283,9 @@ for r in range(rmax):
             plt.xlabel('x', fontdict={"family": "Times New Roman", "size": 15})
             plt.ylabel('y', fontdict={"family": "Times New Roman", "size": 15})
             plt.title(f'IMP_LEACH：第{r+1}次迭代', fontdict={"size": 15})
-            plt.ion()       # 开启交互模式，如果不用动态展示，注释
+            plt.ion()       # 开启交互模式
             plt.show()
-            plt.pause(0.15)  # 暂停0.15s，如果不用动态展示，注释
+            plt.pause(0.15)  # 暂停0.15s
 
 if is_display:
     plt.ioff() # 关闭交互模式
@@ -394,7 +394,7 @@ for r in range(rmax):
             Node[i].flag = 0
 
 ########################################################################################
-    # 动态显示节点分簇情况，不需要可以注释
+    # 动态显示节点分簇情况
     if is_display:
         if (r+1)%10 == 0:  # 每10次迭代画一次
             # fig2 = plt.figure(dpi=80)
@@ -413,9 +413,9 @@ for r in range(rmax):
             plt.xlabel('x', fontdict={"family": "Times New Roman", "size": 15})
             plt.ylabel('y', fontdict={"family": "Times New Roman", "size": 15})
             plt.title(f'LEACH：第{r+1}次迭代', fontdict={"size": 15})
-            plt.ion()       # 开启交互模式，如果不用动态展示，注释
+            plt.ion()       # 开启交互模式
             plt.show()
-            plt.pause(0.15)  # 暂停0.15s，如果不用动态展示，注释
+            plt.pause(0.15)  # 暂停0.15s
 
 if is_display:
     plt.ioff() # 关闭交互模式
