@@ -33,11 +33,11 @@ class SensorNode:  # 定义传感器节点
 random.seed(2)                    # 固定随机种子，使每次随机位置相同
 n = 400                           # 节点总数
 rmax = 2000                       # 迭代次数
-is_display = False                 # 是否动态显示节点分簇情况
+is_display = True                 # 是否动态显示节点分簇情况
 if is_display:
     # 节点太多，会导致出图较慢，看起来较乱，这里设置n = 40, rmax=400演示效果
     n = 40
-    max = 200  
+    rmax = 200  
 xm = 100                          # x轴范围
 ym = 100                          # y轴范围
 sink = BaseStation()
